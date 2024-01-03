@@ -1,17 +1,31 @@
 import torch
+import click
+from mlops.models.model import NeuralNet
+import torch.utils.data as data_utils
 
-def predict(
-    model: torch.nn.Module,
-    dataloader: torch.utils.data.DataLoader
-) -> None:
-    """Run prediction for a given model and dataloader.
+@click.command()
+@click.argument("model_checkpoint")
+@click.argument("data_path")
+def predict(model_checkpoint, data_path):
+    model = NeuralNet()
+    model.load_state_dict(torch.load(model_checkpoint))
+    model.eval()
     
-    Args:
-        model: model to use for prediction
-        dataloader: dataloader with batches
-    
-    Returns
-        Tensor of shape [N, d] where N is the number of samples and d is the output dimension of the model
+    images = torch.load(data_path)
+    dataset = data_utils.TensorDataset(images)
+    dataloader = data_utils.DataLoader(dataset, batch_size=64, shuffle=False)
 
-    """
-    return torch.cat([model(batch) for batch in dataloader], 0)
+    with torch.no_grad():
+        prediction = torch.cat([model(images) for images, in dataloader])
+
+    torch.save(prediction, f"mlops/predictions/predictions.pt")
+    print("Successfully saved predictions.")
+
+    return prediction
+
+if __name__ == '__main__':
+    try:
+        predict()
+    except Exception as e:
+        print("Error while predicting.")
+        print(e)
