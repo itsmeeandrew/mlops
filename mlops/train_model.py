@@ -24,8 +24,8 @@ def save_loss_plot(train_losses, test_losses):
     plt.savefig("reports/figures/loss.png")
     print("Loss plot saved.")
 
-def save_model(model):
-    torch.save(model.state_dict(), f'mlops/checkpoints/checkpoint_{e}.pth')
+def save_model(model, epoch):
+    torch.save(model.state_dict(), f'mlops/checkpoints/checkpoint_{epoch}.pth')
     print("Model saved.")
 
 
@@ -40,7 +40,7 @@ def train():
 
     criterion = torch.nn.NLLLoss(reduction="sum").to(DEVICE)
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
-    epochs = 3
+    epochs = 1
     train_losses = []
     test_losses = []
 
@@ -78,7 +78,7 @@ def train():
             print(f"Test loss: {running_loss/len(testloader):.3f}")
             test_losses.append(running_loss/len(testloader))
 
-    save_model(model)
+    save_model(model, e)
     save_loss_plot(train_losses, test_losses)
     
 
