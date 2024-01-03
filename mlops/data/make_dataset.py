@@ -20,5 +20,9 @@ def load_and_save(prefix="train"):
     torch.save(targets, f"data/processed/{prefix}_targets.pt")
 
 if __name__ == '__main__':
-    load_and_save("train")
-    load_and_save("test")
+    try:
+        load_and_save("train")
+        load_and_save("test")
+        print("Successfully created processed data.")
+    except:
+        print("Error while creating processed data.")
