@@ -24,5 +24,6 @@ if __name__ == '__main__':
         load_and_save("train")
         load_and_save("test")
         print("Successfully created processed data.")
-    except:
+    except Exception as e:
         print("Error while creating processed data.")
+        print(e)

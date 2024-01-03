@@ -28,7 +28,7 @@ def predict(model_checkpoint, data_path):
     with torch.no_grad():
         prediction = torch.cat([model(images) for images, in dataloader])
 
-    torch.save(prediction, f"mlops/predictions/predictions.pt")
+    torch.save(prediction, "mlops/predictions/predictions.pt")
     print("Successfully saved predictions.")
 
     return prediction
