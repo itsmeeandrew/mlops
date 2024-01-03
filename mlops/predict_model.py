@@ -7,6 +7,16 @@ import torch.utils.data as data_utils
 @click.argument("model_checkpoint")
 @click.argument("data_path")
 def predict(model_checkpoint, data_path):
+    """
+        Predicts on the provided data and saves the predictions to mlops/predictions/predictions.pt
+
+        Parameters:
+            model_checkpoint: Path to model checkpoint
+            data_path: Path pre-loaded data (B x H x W)
+        
+        Returns:
+            predictions: Predictions from the model (B x 10)
+    """
     model = NeuralNet()
     model.load_state_dict(torch.load(model_checkpoint))
     model.eval()

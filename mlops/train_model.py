@@ -30,6 +30,10 @@ def save_model(model, epoch):
 
 
 def train():
+    """
+    Trains the model and saves the trained model to mlops/checkpoints/checkpoint_[epoch].pth and saves the loss plot to reports/figures/loss.png
+    """
+
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", DEVICE)
 
