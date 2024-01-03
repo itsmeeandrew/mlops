@@ -1,5 +1,7 @@
+# Project
 mlops/checkpoints/
 mlops/predictions/
+data/
 
 docs/site/
 
