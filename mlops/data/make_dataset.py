@@ -1,11 +1,14 @@
-import torch
 from glob import glob
+
+import torch
+
 
 def normalize_images(x):
     means = x.mean(dim=(1, 2))
     stds = x.std(dim=(1, 2))
 
     return (x - means[:, None, None]) / stds[:, None, None]
+
 
 def load_and_save(prefix="train"):
     image_files = glob(f"data/raw/{prefix}_images*.pt")
@@ -19,7 +22,8 @@ def load_and_save(prefix="train"):
     torch.save(images, f"data/processed/{prefix}_images.pt")
     torch.save(targets, f"data/processed/{prefix}_targets.pt")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         load_and_save("train")
         load_and_save("test")

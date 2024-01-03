@@ -1,7 +1,9 @@
-import torch
 import matplotlib.pyplot as plt
-from mlops.models.model import NeuralNet
+import torch
 import torch.utils.data as data_utils
+
+from mlops.models.model import NeuralNet
+
 
 def load_dataset():
     train_images = torch.load("data/processed/train_images.pt")
@@ -16,6 +18,7 @@ def load_dataset():
 
     return trainloader, testloader
 
+
 def save_loss_plot(train_losses, test_losses):
     plt.plot(train_losses, label="Training loss")
     plt.plot(test_losses, label="Test loss")
@@ -24,8 +27,9 @@ def save_loss_plot(train_losses, test_losses):
     plt.savefig("reports/figures/loss.png")
     print("Loss plot saved.")
 
+
 def save_model(model, epoch):
-    torch.save(model.state_dict(), f'mlops/checkpoints/checkpoint_{epoch}.pth')
+    torch.save(model.state_dict(), f"mlops/checkpoints/checkpoint_{epoch}.pth")
     print("Model saved.")
 
 
@@ -65,7 +69,7 @@ def train():
             running_loss += loss.item()
         else:
             print(f"Training loss: {running_loss/len(trainloader):.3f}")
-            train_losses.append(running_loss/len(trainloader))
+            train_losses.append(running_loss / len(trainloader))
 
         running_loss = 0
         for images, targets in testloader:
@@ -80,13 +84,13 @@ def train():
                 running_loss += loss.item()
         else:
             print(f"Test loss: {running_loss/len(testloader):.3f}")
-            test_losses.append(running_loss/len(testloader))
+            test_losses.append(running_loss / len(testloader))
 
     save_model(model, e)
     save_loss_plot(train_losses, test_losses)
-    
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         train()
     except Exception as e:
