@@ -20,7 +20,7 @@ def predict(model_checkpoint, data_path):
         predictions: Predictions from the model (B x 10)
     """
     model = NeuralNet()
-    model.load_state_dict(torch.load(model_checkpoint))
+    model.load_state_dict(torch.load(model_checkpoint, map_location=torch.device("cpu")))
     model.eval()
 
     images = torch.load(data_path)
