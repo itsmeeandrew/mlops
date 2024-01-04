@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.utils.data as data_utils
 
-from mlops.models.model import NeuralNet
+from mlops.models.small_model import NeuralNet
 
 
 def load_dataset():

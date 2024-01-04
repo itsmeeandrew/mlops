@@ -14,8 +14,8 @@ readme = "README.md"
 requires-python = "~=3.10"
 dynamic = ["dependencies", "optional-dependencies"]
 
-[tool.setuptools]
-packages = ["mlops"]
+[tool.setuptools.packages.find]
+namespaces = false
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
