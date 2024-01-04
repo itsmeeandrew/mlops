@@ -1,0 +1,8 @@
+hyperparameters:
+    c1out: 32
+    c2out: 64
+    c3out: 64
+    fc1out: 1024
+    fc2out: 128
+    fc3out: 64
+    p_drop: 0.55

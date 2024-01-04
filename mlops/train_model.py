@@ -1,20 +1,21 @@
+import hydra
 import matplotlib.pyplot as plt
 import torch
 import torch.utils.data as data_utils
 
-from mlops.models.small_model import NeuralNet
+from mlops.models.model import NeuralNet
 
 
-def load_dataset():
+def load_dataset(batch_size):
     train_images = torch.load("data/processed/train_images.pt")
     train_targets = torch.load("data/processed/train_targets.pt")
     train = data_utils.TensorDataset(train_images, train_targets)
-    trainloader = data_utils.DataLoader(train, batch_size=64, shuffle=True)
+    trainloader = data_utils.DataLoader(train, batch_size=batch_size, shuffle=True)
 
     test_images = torch.load("data/processed/test_images.pt")
     test_targets = torch.load("data/processed/test_targets.pt")
     test = data_utils.TensorDataset(test_images, test_targets)
-    testloader = data_utils.DataLoader(test, batch_size=64, shuffle=False)
+    testloader = data_utils.DataLoader(test, batch_size=batch_size, shuffle=False)
 
     return trainloader, testloader
 
@@ -33,7 +34,24 @@ def save_model(model, epoch):
     print("Model saved.")
 
 
-def train():
+def get_model(cfg):
+    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_hparams = cfg.hyperparameters
+    model = NeuralNet(
+        c1out=model_hparams["c1out"],
+        c2out=model_hparams["c2out"],
+        c3out=model_hparams["c3out"],
+        fc1out=model_hparams["fc1out"],
+        fc2out=model_hparams["fc2out"],
+        fc3out=model_hparams["fc3out"],
+        p_drop=model_hparams["p_drop"],
+    )
+    model.to(DEVICE)
+
+    return model
+
+
+def train(train_cfg, model_cfg):
     """
     Trains the model and saves the trained model to mlops/checkpoints/checkpoint_[epoch].pth and saves the loss plot to reports/figures/loss.png
     """
@@ -41,14 +59,17 @@ def train():
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", DEVICE)
 
-    model = NeuralNet()
-    model.to(DEVICE)
+    train_hparams = train_cfg.hyperparameters
 
-    trainloader, testloader = load_dataset()
+    torch.manual_seed(train_hparams["seed"])
+
+    model = get_model(model_cfg)
+
+    trainloader, testloader = load_dataset(train_hparams["batch_size"])
 
     criterion = torch.nn.NLLLoss(reduction="sum").to(DEVICE)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
-    epochs = 1
+    optimizer = torch.optim.AdamW(model.parameters(), lr=train_hparams["lr"])
+    epochs = train_hparams["epochs"]
     train_losses = []
     test_losses = []
 
@@ -90,9 +111,17 @@ def train():
     save_loss_plot(train_losses, test_losses)
 
 
+def main():
+    hydra.initialize(config_path="conf")
+    train_cfg = hydra.compose("train_conf.yaml")
+    model_cfg = hydra.compose("model_conf.yaml")
+    train(train_cfg, model_cfg)
+
+
 if __name__ == "__main__":
-    try:
-        train()
+    """ try:
+        main()
     except Exception as e:
         print("Error during training.")
-        print(e)
+        print(e) """
+    main()

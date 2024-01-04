@@ -2,7 +2,7 @@
 mlops/checkpoints/
 mlops/predictions/
 data/
-
+outputs/
 docs/site/
 
 # test cache
