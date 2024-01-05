@@ -2,8 +2,11 @@ import hydra
 import matplotlib.pyplot as plt
 import torch
 import torch.utils.data as data_utils
-
+from pytorch_lightning import Trainer
 from mlops.models.model import NeuralNet
+from mlops.lightning.lightning_nn import LightningNeuralNet
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import WandbLogger
 
 
 def load_dataset(batch_size):
@@ -56,59 +59,28 @@ def train(train_cfg, model_cfg):
     Trains the model and saves the trained model to mlops/checkpoints/checkpoint_[epoch].pth and saves the loss plot to reports/figures/loss.png
     """
 
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("Using device:", DEVICE)
-
     train_hparams = train_cfg.hyperparameters
 
-    torch.manual_seed(train_hparams["seed"])
-
     model = get_model(model_cfg)
+    lightning_model = LightningNeuralNet(model, train_hparams["lr"])
 
     trainloader, testloader = load_dataset(train_hparams["batch_size"])
+    checkpoint_callback = ModelCheckpoint(
+        dirpath="mlops/checkpoints", monitor="Validation loss", mode="min"
+    )
 
-    criterion = torch.nn.NLLLoss(reduction="sum").to(DEVICE)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=train_hparams["lr"])
-    epochs = train_hparams["epochs"]
-    train_losses = []
-    test_losses = []
-
-    for e in range(epochs):
-        print(f"{e+1}/{epochs}")
-        model.train()
-        running_loss = 0
-        for images, targets in trainloader:
-            images = images.to(DEVICE)
-            targets = targets.to(DEVICE)
-
-            optimizer.zero_grad()
-            output = model(images)
-            loss = criterion(output, targets)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-        else:
-            print(f"Training loss: {running_loss/len(trainloader):.3f}")
-            train_losses.append(running_loss / len(trainloader))
-
-        running_loss = 0
-        for images, targets in testloader:
-            model.eval()
-
-            images = images.to(DEVICE)
-            targets = targets.to(DEVICE)
-
-            with torch.no_grad():
-                output = model(images)
-                loss = criterion(output, targets)
-                running_loss += loss.item()
-        else:
-            print(f"Test loss: {running_loss/len(testloader):.3f}")
-            test_losses.append(running_loss / len(testloader))
-
-    save_model(model, e)
-    save_loss_plot(train_losses, test_losses)
+    trainer = Trainer(
+        accelerator="gpu", 
+        max_epochs=train_hparams["epochs"], 
+        callbacks=[checkpoint_callback],
+        precision="16",
+        logger=WandbLogger(project="mlops")
+    )
+    trainer.fit(
+        model=lightning_model, 
+        train_dataloaders=trainloader, 
+        val_dataloaders=testloader
+    )
 
 
 def main():
@@ -119,9 +91,8 @@ def main():
 
 
 if __name__ == "__main__":
-    """ try:
+    try:
         main()
     except Exception as e:
         print("Error during training.")
-        print(e) """
-    main()
+        print(e)
