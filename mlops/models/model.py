@@ -4,7 +4,8 @@ from torch import nn
 class NeuralNet(nn.Module):
     def __init__(self, c1out=32, c2out=64, c3out=64, fc1out=1028, fc2out=128, fc3out=64, p_drop=0.55):
         super().__init__()
-        self.fc1 = nn.Linear(c3out * 28 * 28, fc1out)
+        self.fc1 = None
+        self.fc1out = fc1out
         self.fc2 = nn.Linear(fc1out, fc2out)
         self.fc3 = nn.Linear(fc2out, fc3out)
         self.fc4 = nn.Linear(fc3out, 10)
@@ -26,7 +27,12 @@ class NeuralNet(nn.Module):
         self.logsoftmax = nn.LogSoftmax(dim=1)
 
     def forward(self, x):
+        if not x.shape[0] >= 2:
+            raise ValueError("Batch size must be at least 2, because of batch normalization")
+
+
         x = x.unsqueeze(1)
+ 
         x = self.activation(self.bn1(self.conv1(x)))
         x = self.dropout(x)
         x = self.activation(self.bn2(self.conv2(x)))
@@ -35,6 +41,9 @@ class NeuralNet(nn.Module):
         x = self.dropout(x)
 
         x = x.view(x.shape[0], -1)
+
+        if self.fc1 is None:
+            self.fc1 = nn.Linear(x.shape[1], self.fc1out)
 
         x = self.activation(self.bn4(self.fc1(x)))
         x = self.dropout(x)
