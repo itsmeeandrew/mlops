@@ -9,6 +9,7 @@ jobs:
       - name: Train model
         run: |
           pip install -r requirements.txt  # install dependencies
+          pip install .
           python mlops/train_model.py  # run training
       - name: Write report
         env:
