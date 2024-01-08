@@ -29,6 +29,6 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # send all information to report.md that will be reported to us when the workflow finish
-          cat reports/figures/classification_report.txt >> report.md
-          cml-publish reports/figures/confusion_matrix.png --md >> report.md
+          cat /reports/figures/classification_report.txt >> report.md
+          cml-publish /reports/figures/confusion_matrix.png --md >> report.md
           cml-send-comment report.md
