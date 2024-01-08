@@ -2,6 +2,7 @@ import hydra
 import matplotlib.pyplot as plt
 import torch
 import torch.utils.data as data_utils
+from sklearn.metrics import ConfusionMatrixDisplay, classification_report, confusion_matrix
 
 from mlops.models.model import NeuralNet
 
@@ -73,6 +74,8 @@ def train(train_cfg, model_cfg):
     train_losses = []
     test_losses = []
 
+    preds = []
+    target = []
     for e in range(epochs):
         print(f"{e+1}/{epochs}")
         model.train()
@@ -83,6 +86,10 @@ def train(train_cfg, model_cfg):
 
             optimizer.zero_grad()
             output = model(images)
+
+            preds.append(output.argmax(dim=1).cpu())
+            target.append(targets.detach().cpu())
+
             loss = criterion(output, targets)
             loss.backward()
             optimizer.step()
@@ -107,6 +114,17 @@ def train(train_cfg, model_cfg):
             print(f"Test loss: {running_loss/len(testloader):.3f}")
             test_losses.append(running_loss / len(testloader))
 
+    target = torch.cat(target, dim=0)
+    preds = torch.cat(preds, dim=0)
+
+    report = classification_report(target, preds)
+    with open("reports/figures/classification_report.txt", "w") as outfile:
+        outfile.write(report)
+    confmat = confusion_matrix(target, preds)
+    disp = ConfusionMatrixDisplay(confusion_matrix=confmat)
+    disp.plot()
+    plt.savefig("reports/figures/confusion_matrix.png")
+
     save_model(model, e)
     save_loss_plot(train_losses, test_losses)
 
@@ -119,8 +137,9 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
+    """ try:
         main()
     except Exception as e:
         print("Error during training.")
-        print(e)
+        print(e) """
+    main()

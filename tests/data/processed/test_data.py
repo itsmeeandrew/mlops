@@ -2,7 +2,7 @@ import os.path
 
 import pytest
 
-from mlops.train_model import load_dataset
+from mlops.train_model_lightning import load_dataset
 from tests import _PATH_DATA
 
 

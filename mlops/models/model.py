@@ -42,7 +42,7 @@ class NeuralNet(nn.Module):
         x = x.view(x.shape[0], -1)
 
         if self.fc1 is None:
-            self.fc1 = nn.Linear(x.shape[1], self.fc1out)
+            self.fc1 = nn.Linear(x.shape[1], self.fc1out).to(x.device)
 
         x = self.activation(self.bn4(self.fc1(x)))
         x = self.dropout(x)
