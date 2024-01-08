@@ -6,11 +6,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: iterative/setup-cml@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install .
       - name: Train model
         run: |
-          pip install -r requirements.txt  # install dependencies
-          pip install .
-          python mlops/train_model.py  # run training
+          python mlops/train_model.py
       - name: Write report
         env:
           # this authenticates that the right permissions are in place
