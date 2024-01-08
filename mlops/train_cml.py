@@ -125,8 +125,9 @@ def train(train_cfg, model_cfg):
     disp.plot()
     plt.savefig("reports/figures/confusion_matrix.png")
 
-    save_model(model, e)
-    save_loss_plot(train_losses, test_losses)
+    # Currently do not work
+    # save_model(model, e)
+    # save_loss_plot(train_losses, test_losses)
 
 
 def main():
