@@ -6,6 +6,7 @@ outputs/
 docs/site/
 lightning_logs/
 wandb/
+/.pre-commit-config.yaml
 
 # test cache
 manual_test/
