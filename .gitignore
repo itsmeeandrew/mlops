@@ -5,6 +5,7 @@ data/
 outputs/
 docs/site/
 lightning_logs/
+wandb/
 
 # test cache
 manual_test/
