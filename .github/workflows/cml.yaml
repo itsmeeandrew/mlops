@@ -5,7 +5,7 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: iterative/setup-cml@v1
+      - uses: iterative/setup-cml@v2
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -30,5 +30,5 @@ jobs:
         run: |
           # send all information to report.md that will be reported to us when the workflow finish
           cat reports/figures/classification_report.txt >> report.md
-          cml-publish reports/figures/confusion_matrix.png --md >> report.md
-          cml-send-comment report.md
+          cml publish reports/figures/confusion_matrix.png --md >> report.md
+          cml send-comment report.md
