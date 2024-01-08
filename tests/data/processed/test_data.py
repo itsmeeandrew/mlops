@@ -11,6 +11,7 @@ def test_length():
     assert len(trainloader) == 50000, "Length of trainloader is not as expected"
     assert len(testloader) == 5000, "Length of testloader is not as expected"
 
+@pytest.mark.skipif(not os.path.exists(_PATH_DATA), reason="Data files not found")
 def test_shape():
     trainloader, testloader = load_dataset(1)
 
