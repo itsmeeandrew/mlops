@@ -4,12 +4,12 @@ jobs:
   run:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
-      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v4
+      - uses: iterative/setup-cml@v2
       - name: Train model
         run: |
           pip install -r requirements.txt  # install dependencies
-          python train.py  # run training
+          python mlops/train_model.py  # run training
       - name: Write report
         env:
           # this authenticates that the right permissions are in place
