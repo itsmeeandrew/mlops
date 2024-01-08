@@ -1,7 +1,7 @@
 # Project
 mlops/checkpoints/
 mlops/predictions/
-data/
+/data/
 outputs/
 docs/site/
 lightning_logs/
