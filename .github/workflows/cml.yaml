@@ -15,6 +15,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install .
+      - uses: iterative/setup-dvc@v1
+      - name: Get data
+        run: dvc pull
+        env:
+            GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
       - name: Train model
         run: |
           python mlops/train_model.py
