@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import torch
 import torch.utils.data as data_utils
 from pytorch_lightning import Trainer
-from mlops.models.model import NeuralNet
-from mlops.lightning.lightning_nn import LightningNeuralNet
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
+
+from mlops.lightning.lightning_nn import LightningNeuralNet
+from mlops.models.model import NeuralNet
 
 
 def load_dataset(batch_size):
@@ -65,22 +66,16 @@ def train(train_cfg, model_cfg):
     lightning_model = LightningNeuralNet(model, train_hparams["lr"])
 
     trainloader, testloader = load_dataset(train_hparams["batch_size"])
-    checkpoint_callback = ModelCheckpoint(
-        dirpath="mlops/checkpoints", monitor="Validation loss", mode="min"
-    )
+    checkpoint_callback = ModelCheckpoint(dirpath="mlops/checkpoints", monitor="Validation loss", mode="min")
 
     trainer = Trainer(
-        accelerator="gpu", 
-        max_epochs=train_hparams["epochs"], 
+        accelerator="gpu",
+        max_epochs=train_hparams["epochs"],
         callbacks=[checkpoint_callback],
         precision="16",
-        logger=WandbLogger(project="mlops")
+        logger=WandbLogger(project="mlops"),
     )
-    trainer.fit(
-        model=lightning_model, 
-        train_dataloaders=trainloader, 
-        val_dataloaders=testloader
-    )
+    trainer.fit(model=lightning_model, train_dataloaders=trainloader, val_dataloaders=testloader)
 
 
 def main():

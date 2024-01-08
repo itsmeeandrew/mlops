@@ -1,7 +1,9 @@
 from typing import Any
+
+import torch
 from pytorch_lightning import LightningModule
 from pytorch_lightning.utilities.types import STEP_OUTPUT
-import torch
+
 
 class LightningNeuralNet(LightningModule):
     def __init__(self, model, lr):

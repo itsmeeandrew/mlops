@@ -30,9 +30,8 @@ class NeuralNet(nn.Module):
         if not x.shape[0] >= 2:
             raise ValueError("Batch size must be at least 2, because of batch normalization")
 
-
         x = x.unsqueeze(1)
- 
+
         x = self.activation(self.bn1(self.conv1(x)))
         x = self.dropout(x)
         x = self.activation(self.bn2(self.conv2(x)))
